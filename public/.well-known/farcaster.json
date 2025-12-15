@@ -1,0 +1,31 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Block Puzzle",
+    "homeUrl": "https://your-app-domain.com",
+    "iconUrl": "https://your-app-domain.com/icon.png",
+    "splashImageUrl": "https://your-app-domain.com/splash.png",
+    "splashBackgroundColor": "#1a0f2e",
+    "webhookUrl": "https://your-app-domain.com/api/webhook",
+    "subtitle": "Skill-Based Daily Tournaments",
+    "description": "Play block puzzle for free, compete in daily tournaments for real prizes on Base. Earn soulbound achievement NFTs and climb the leaderboard!",
+    "screenshotUrls": [
+      "https://your-app-domain.com/screenshot1.png",
+      "https://your-app-domain.com/screenshot2.png",
+      "https://your-app-domain.com/screenshot3.png"
+    ],
+    "primaryCategory": "games",
+    "tags": ["game", "puzzle", "base", "tournament", "nft", "web3"],
+    "heroImageUrl": "https://your-app-domain.com/hero.png",
+    "tagline": "Play, Compete, Win on Base",
+    "ogTitle": "Block Puzzle - Daily Tournaments on Base",
+    "ogDescription": "Free-to-play block puzzle game with skill-based tournaments. Compete for ETH prizes and collect soulbound achievement NFTs!",
+    "ogImageUrl": "https://your-app-domain.com/og-image.png",
+    "noindex": false
+  }
+}

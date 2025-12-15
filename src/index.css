@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #1a0f2e 0%, #2d1b4e 100%);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Farcaster Mini App optimal dimensions */
+@media (min-width: 640px) {
+  #root {
+    max-width: 640px;
+  }
+}
+
+button {
+  font-family: 'Lexend', sans-serif;
+}
+
+input, textarea {
+  font-family: 'Lexend', sans-serif;
+}
