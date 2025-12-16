@@ -141,7 +141,7 @@
 }
 
 .entry-section {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 47, 247, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 0, 255, 0.1) 100%);
   border: 2px solid rgba(0, 212, 255, 0.3);
   border-radius: 16px;
   padding: 2rem;
@@ -173,7 +173,7 @@
 .enter-tournament-btn {
   width: 100%;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+  background: linear-gradient(135deg, #00d4ff 0%, #0000FF 100%);
   border: none;
   border-radius: 12px;
   color: #ffffff;
@@ -196,7 +196,7 @@
 }
 
 .entered-status {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(123, 47, 247, 0.15) 100%);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 0, 255, 0.15) 100%);
   border: 2px solid rgba(0, 212, 255, 0.5);
   border-radius: 16px;
   padding: 2rem;
@@ -207,7 +207,7 @@
 .success-icon {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+  background: linear-gradient(135deg, #00d4ff 0%, #0000FF 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -230,7 +230,7 @@
 
 .play-tournament-btn {
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #7b2ff7 0%, #00d4ff 100%);
+  background: linear-gradient(135deg, #0000FF 0%, #00d4ff 100%);
   border: none;
   border-radius: 12px;
   color: #ffffff;
@@ -246,7 +246,7 @@
 
 .tournament-rules {
   background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(123, 47, 247, 0.3);
+  border: 2px solid rgba(0, 0, 255, 0.3);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -255,7 +255,7 @@
 .tournament-rules h3 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: #7b2ff7;
+  color: #0000FF;
 }
 
 .tournament-rules ul {

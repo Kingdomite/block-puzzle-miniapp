@@ -53,7 +53,7 @@
 }
 
 .stat-badge.total {
-  border-color: rgba(123, 47, 247, 0.3);
+  border-color: rgba(0, 0, 255, 0.3);
 }
 
 .stat-number {
@@ -67,7 +67,7 @@
 }
 
 .stat-badge.total .stat-number {
-  color: #7b2ff7;
+  color: #0000FF;
 }
 
 .stat-text {
@@ -79,7 +79,7 @@
 
 .achievements-info {
   background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(123, 47, 247, 0.3);
+  border: 2px solid rgba(0, 0, 255, 0.3);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -88,7 +88,7 @@
 .achievements-info h3 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-  color: #7b2ff7;
+  color: #0000FF;
 }
 
 .achievements-info ul {
@@ -139,7 +139,7 @@
 
 .achievement-card.earned {
   border-color: rgba(0, 212, 255, 0.5);
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(0, 0, 255, 0.1) 0%, transparent 100%);
 }
 
 .achievement-card.minted {
@@ -186,7 +186,7 @@
 .mint-btn {
   margin-top: 0.75rem;
   padding: 0.6rem 1rem;
-  background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+  background: linear-gradient(135deg, #00d4ff 0%, #0000FF 100%);
   border: none;
   border-radius: 8px;
   color: #ffffff;
