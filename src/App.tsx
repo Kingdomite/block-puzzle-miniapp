@@ -9,6 +9,7 @@ import './App.css';
 function App() {
   const [activeTab, setActiveTab] = useState<'play' | 'tournament' | 'achievements'>('play');
   const [isReady, setIsReady] = useState(false);
+  const [tournamentMode, setTournamentMode] = useState(false);
 
   useEffect(() => {
     // Initialize Farcaster Mini App SDK
@@ -60,8 +61,13 @@ function App() {
       </nav>
 
       <main className="content">
-        {activeTab === 'play' && <GameBoard />}
-        {activeTab === 'tournament' && <Tournament />}
+        {activeTab === 'play' && <GameBoard tournamentMode={tournamentMode} />}
+        {activeTab === 'tournament' && (
+          <Tournament onStartGame={() => {
+            setTournamentMode(true);
+            setActiveTab('play');
+          }} />
+        )}
         {activeTab === 'achievements' && <Achievements />}
       </main>
     </div>

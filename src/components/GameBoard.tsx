@@ -15,7 +15,11 @@ const BLOCK_SHAPES: BlockShape[] = [
   [[1, 1], [0, 1]], // Reverse L
 ];
 
-const GameBoard = () => {
+interface GameBoardProps {
+  tournamentMode?: boolean;
+}
+
+const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
   const [grid, setGrid] = useState<GridCell[][]>(() =>
     Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false))
   );
@@ -102,6 +106,20 @@ const GameBoard = () => {
 
   return (
     <div className="game-board-container">
+      {tournamentMode && (
+        <div style={{
+          background: 'linear-gradient(135deg, #00d4ff 0%, #0000FF 100%)',
+          padding: '12px',
+          borderRadius: '12px',
+          marginBottom: '16px',
+          textAlign: 'center',
+          fontWeight: '600',
+          fontSize: '14px',
+          border: '2px solid rgba(0, 212, 255, 0.3)'
+        }}>
+          🏆 Tournament Mode - Your score counts!
+        </div>
+      )}
       <div className="game-header">
         <div className="score-display">
           <span className="score-label">Score</span>

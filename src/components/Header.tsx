@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import './Header.css';
+import { web3Service } from '../contracts/web3Service';
 
 const Header = () => {
   const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   const connectWallet = async () => {
     try {
-      // Wallet connection will be handled by Farcaster SDK
-      setWalletConnected(true);
+      const address = await web3Service.connect();
+      if (address) {
+        setWalletConnected(true);
+        setWalletAddress(address);
+      }
     } catch (error) {
       console.error('Failed to connect wallet:', error);
     }
@@ -24,7 +29,9 @@ const Header = () => {
           className={`wallet-btn ${walletConnected ? 'connected' : ''}`}
           onClick={connectWallet}
         >
-          {walletConnected ? '🟢 Connected' : '⚪ Connect'}
+          {walletConnected && walletAddress
+            ? `🟢 ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+            : '⚪ Connect'}
         </button>
       </div>
       <div className="header-subtitle">

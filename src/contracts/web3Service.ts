@@ -3,7 +3,8 @@ import {
   ACHIEVEMENT_BADGES_ABI, 
   TOURNAMENT_MANAGER_ABI,
   GAME_CONTROLLER_ABI,
-  CONTRACT_ADDRESSES 
+  CONTRACT_ADDRESSES,
+  BASE_SEPOLIA
 } from './config';
 
 declare global {
@@ -86,18 +87,32 @@ export class Web3Service {
 
   // Tournament contract methods
   async enterTournament(): Promise<boolean> {
-    if (!this.signer) return false;
+    if (!this.signer || !this.provider) return false;
 
     try {
+      const network = await this.provider.getNetwork();
+      if (Number(network.chainId) !== BASE_SEPOLIA.chainId) {
+        console.error('Wrong network. Please switch your wallet to Base Sepolia.');
+        return false;
+      }
+
       const contract = new Contract(
         CONTRACT_ADDRESSES.TOURNAMENT_MANAGER,
         TOURNAMENT_MANAGER_ABI,
         this.signer
       );
 
-      const entryFee = await contract.getEntryFeeETH();
+      let entryFee;
+      try {
+        entryFee = await contract.getEntryFeeETH();
+      } catch (e) {
+        console.warn('Failed to fetch entry fee from contract, falling back to default.', e);
+      }
+
+      const value = entryFee ?? parseEther('0.00035');
+
       const tx = await contract.enterTournament({
-        value: entryFee
+        value
       });
       
       await tx.wait();

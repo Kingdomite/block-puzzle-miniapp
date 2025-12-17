@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title AchievementBadges
@@ -34,10 +35,13 @@ contract AchievementBadges is ERC1155, Ownable, ReentrancyGuard {
     
     constructor(
         string memory uri,
-        address _treasury
+        address _treasury,
+        address _gameController
     ) ERC1155(uri) Ownable(msg.sender) {
         require(_treasury != address(0), "Invalid treasury address");
+        require(_gameController != address(0), "Invalid controller address");
         treasury = _treasury;
+        gameController = _gameController;
     }
     
     /**
@@ -101,9 +105,15 @@ contract AchievementBadges is ERC1155, Ownable, ReentrancyGuard {
         uint256 achievementId,
         bytes memory signature
     ) internal view returns (bool) {
-        // In production: verify ECDSA signature from gameController
-        // For now, simplified check
-        return signature.length > 0;
+        require(gameController != address(0), "Game controller not set");
+
+        bytes32 messageHash = keccak256(abi.encode(player, achievementId));
+        bytes32 ethSignedMessageHash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash)
+        );
+        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
+
+        return recoveredSigner == gameController;
     }
     
     /**

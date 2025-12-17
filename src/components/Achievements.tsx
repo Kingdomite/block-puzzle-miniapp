@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Achievements.css';
+import { web3Service } from '../contracts/web3Service';
 
 interface Achievement {
   id: number;
@@ -12,7 +13,7 @@ interface Achievement {
 }
 
 const Achievements = () => {
-  const [achievements] = useState<Achievement[]>([
+  const [achievements, setAchievements] = useState<Achievement[]>([
     {
       id: 1,
       name: 'First Blood',
@@ -69,9 +70,29 @@ const Achievements = () => {
     }
   ]);
 
-  const handleMint = (id: number) => {
-    console.log('Minting achievement:', id);
-    // Will connect to smart contract
+  const handleMint = async (id: number) => {
+    try {
+      const address = await web3Service.getAddress();
+      if (!address) {
+        alert('Please connect your wallet first');
+        return;
+      }
+
+      const dummySignature = '0x' + '00'.repeat(65);
+      const success = await web3Service.mintAchievement(id, dummySignature);
+      
+      if (success) {
+        setAchievements(prev => prev.map(a => 
+          a.id === id ? { ...a, minted: true } : a
+        ));
+        alert(`Achievement "${achievements.find(a => a.id === id)?.name}" minted successfully!`);
+      } else {
+        alert('Minting failed. Make sure you earned this achievement.');
+      }
+    } catch (error) {
+      console.error('Mint error:', error);
+      alert('Something went wrong minting the achievement.');
+    }
   };
 
   const earnedCount = achievements.filter(a => a.earned).length;

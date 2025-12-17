@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 /**
  * @title TournamentManager
@@ -53,7 +54,13 @@ contract TournamentManager is Ownable, ReentrancyGuard {
     
     mapping(uint256 => Tournament) public tournaments;
     mapping(uint256 => mapping(address => bool)) public hasEntered;
-    mapping(uint256 => mapping(address => uint256)) public playerScores;
+    
+    struct PlayerScore {
+        uint256 score;
+        bool submitted;
+    }
+    
+    mapping(uint256 => mapping(address => PlayerScore)) public playerScores;
     
     // Events
     event TournamentStarted(uint256 indexed tournamentId, uint256 startTime, uint256 endTime);
@@ -100,13 +107,11 @@ contract TournamentManager is Ownable, ReentrancyGuard {
         tournament.totalPrizePool += poolContribution;
         
         // Send platform fee to treasury immediately
-        (bool success, ) = treasury.call{value: platformFee}("");
-        require(success, "Platform fee transfer failed");
+        Address.sendValue(payable(treasury), platformFee);
         
         // Refund excess
         if (msg.value > entryFee) {
-            (bool refundSuccess, ) = msg.sender.call{value: msg.value - entryFee}("");
-            require(refundSuccess, "Refund failed");
+            Address.sendValue(payable(msg.sender), msg.value - entryFee);
         }
         
         emit PlayerEntered(tournamentId, msg.sender, entryFee);
@@ -124,7 +129,10 @@ contract TournamentManager is Ownable, ReentrancyGuard {
         require(hasEntered[tournamentId][player], "Player not entered");
         require(block.timestamp < tournaments[tournamentId].endTime, "Tournament ended");
         
-        playerScores[tournamentId][player] = score;
+        PlayerScore storage ps = playerScores[tournamentId][player];
+        ps.score = score;
+        ps.submitted = true;
+        
         emit ScoreSubmitted(tournamentId, player, score);
     }
     
@@ -140,6 +148,10 @@ contract TournamentManager is Ownable, ReentrancyGuard {
         require(block.timestamp >= tournament.endTime, "Tournament not ended");
         require(!tournament.finalized, "Already finalized");
         require(winners.length == 3, "Must have 3 winners");
+        
+        for (uint256 i = 0; i < winners.length; i++) {
+            require(playerScores[tournamentId][winners[i]].submitted, "Score not submitted");
+        }
         
         tournament.finalized = true;
         tournament.winners = winners;
@@ -157,14 +169,12 @@ contract TournamentManager is Ownable, ReentrancyGuard {
         tournament.prizes = prizes;
         
         // Send treasury cut
-        (bool treasurySuccess, ) = treasury.call{value: treasuryCut}("");
-        require(treasurySuccess, "Treasury transfer failed");
+        Address.sendValue(payable(treasury), treasuryCut);
         
         // Distribute prizes to winners
         for (uint256 i = 0; i < 3; i++) {
             if (winners[i] != address(0) && prizes[i] > 0) {
-                (bool success, ) = winners[i].call{value: prizes[i]}("");
-                require(success, "Prize transfer failed");
+                Address.sendValue(payable(winners[i]), prizes[i]);
                 emit PrizeDistributed(tournamentId, winners[i], prizes[i]);
             }
         }
@@ -233,5 +243,12 @@ contract TournamentManager is Ownable, ReentrancyGuard {
      */
     function hasEnteredCurrent(address player) external view returns (bool) {
         return hasEntered[currentTournamentId][player];
+    }
+    
+    /**
+     * @dev Get player's score in current tournament
+     */
+    function getPlayerScore(address player) external view returns (uint256) {
+        return playerScores[currentTournamentId][player].score;
     }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Tournament.css';
+import { web3Service } from '../contracts/web3Service';
 
 interface TournamentData {
   prizePool: number;
@@ -8,14 +9,62 @@ interface TournamentData {
   entryFee: number;
 }
 
-const Tournament = () => {
+interface TournamentProps {
+  onStartGame?: () => void;
+}
+
+const Tournament = ({ onStartGame }: TournamentProps) => {
   const [isEntered, setIsEntered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [tournamentData, setTournamentData] = useState<TournamentData>({
     prizePool: 42.5,
     participants: 127,
     timeRemaining: '18:32:45',
     entryFee: 0.35
   });
+
+  useEffect(() => {
+    const checkIfEntered = async () => {
+      try {
+        const address = await web3Service.getAddress();
+        if (address) {
+          const entered = await web3Service.hasEnteredTournament(address);
+          setIsEntered(entered);
+        }
+      } catch (e) {
+        console.error('Failed to check tournament entry status:', e);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkIfEntered();
+  }, []);
+
+  useEffect(() => {
+    const loadTournamentData = async () => {
+      try {
+        const data = await web3Service.getCurrentTournament();
+        if (data) {
+          setTournamentData(prev => ({
+            ...prev,
+            prizePool: Number(data.totalPrizePool) / 1e18 * 3000,
+            participants: Number(data.participantCount)
+          }));
+        }
+      } catch (e) {
+        console.error('Failed to load tournament data:', e);
+      }
+    };
+
+    if (!isChecking) {
+      loadTournamentData();
+      const interval = setInterval(loadTournamentData, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isChecking]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -45,12 +94,45 @@ const Tournament = () => {
     return () => clearInterval(timer);
   }, [tournamentData.timeRemaining]);
 
-  const handleEnterTournament = () => {
-    setIsEntered(true);
+  const handleEnterTournament = async () => {
+    try {
+      setError(null);
+      setIsLoading(true);
+
+      // Make sure wallet is connected
+      let address = await web3Service.getAddress();
+      if (!address) {
+        address = await web3Service.connect();
+      }
+
+      if (!address) {
+        setError('Please connect your wallet using the button at the top first.');
+        setIsLoading(false);
+        return;
+      }
+
+      const success = await web3Service.enterTournament();
+      if (success) {
+        setIsEntered(true);
+      } else {
+        setError('Transaction failed or was rejected in your wallet.');
+      }
+    } catch (e) {
+      console.error(e);
+      setError('Something went wrong entering the tournament.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="tournament-container">
+      {isChecking ? (
+        <div className="loading-screen" style={{ padding: '40px', textAlign: 'center' }}>
+          <p>Checking tournament status...</p>
+        </div>
+      ) : (
+        <>
       <div className="tournament-header">
         <h2>🏆 Daily Tournament</h2>
         <p className="tournament-subtitle">Compete for Real Prizes on Base</p>
@@ -110,19 +192,17 @@ const Tournament = () => {
               • 5% → Platform Fee
             </p>
           </div>
-          <button className="enter-tournament-btn" onClick={handleEnterTournament}>
-            Join Daily Tournament - ${tournamentData.entryFee}
+          <button className="enter-tournament-btn" onClick={handleEnterTournament} disabled={isLoading}>
+            {isLoading ? 'Waiting for wallet...' : `Join Daily Tournament - $${tournamentData.entryFee}`}
           </button>
-          <p className="disclaimer">
-            ⚠️ This is a skill-based competition. No guaranteed earnings. Play responsibly.
-          </p>
+          {error && <p className="disclaimer" style={{ color: '#ffcccc' }}>{error}</p>}
         </div>
       ) : (
         <div className="entered-status">
           <div className="success-icon">✓</div>
           <h3>You're In!</h3>
           <p>Play your best game before time runs out</p>
-          <button className="play-tournament-btn">
+          <button className="play-tournament-btn" onClick={onStartGame}>
             Start Tournament Game
           </button>
         </div>
@@ -170,6 +250,8 @@ const Tournament = () => {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };
