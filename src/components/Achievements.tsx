@@ -70,6 +70,24 @@ const Achievements = () => {
     }
   ]);
 
+  const playSuccessSound = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Rising success chime
+    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.4);
+  };
+
   const handleMint = async (id: number) => {
     try {
       const address = await web3Service.getAddress();
@@ -85,6 +103,7 @@ const Achievements = () => {
         setAchievements(prev => prev.map(a => 
           a.id === id ? { ...a, minted: true } : a
         ));
+        playSuccessSound();
         alert(`Achievement "${achievements.find(a => a.id === id)?.name}" minted successfully!`);
       } else {
         alert('Minting failed. Make sure you earned this achievement.');

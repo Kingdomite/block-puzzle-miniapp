@@ -27,6 +27,41 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
   const [currentBlock, setCurrentBlock] = useState<BlockShape | null>(null);
   const [gameOver, setGameOver] = useState(false);
 
+  // Sound effects using Web Audio API
+  const playSound = (type: 'place' | 'clear' | 'gameOver') => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    if (type === 'place') {
+      // Quick click sound
+      oscillator.frequency.value = 400;
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } else if (type === 'clear') {
+      // Rising success sound
+      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.2);
+      gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    } else if (type === 'gameOver') {
+      // Descending game over sound
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.5);
+      gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    }
+  };
+
   useEffect(() => {
     generateNewBlock();
   }, []);
@@ -52,6 +87,7 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
       }
     }
     // No valid position found - Game Over!
+    playSound('gameOver');
     setGameOver(true);
   };
 
@@ -91,6 +127,13 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
     const clearedLines = clearCompleteLines(newGrid);
     setGrid(newGrid);
     setScore(prev => prev + 10 + (clearedLines * 50));
+    
+    // Play sounds
+    playSound('place');
+    if (clearedLines > 0) {
+      setTimeout(() => playSound('clear'), 100);
+    }
+    
     generateNewBlock();
   };
 
