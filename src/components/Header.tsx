@@ -78,7 +78,7 @@ const Header = () => {
       <div className="header-content">
         <div className="logo">
           <span className="logo-icon">🧩</span>
-          <h1>Block Puzzle</h1>
+          <h1>Base-Puzzle</h1>
         </div>
         <button 
           className={`wallet-btn ${walletConnected ? 'connected' : ''}`}
