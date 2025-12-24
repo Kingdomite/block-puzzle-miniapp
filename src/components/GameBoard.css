@@ -67,9 +67,16 @@
 }
 
 .grid-cell.filled {
-  background: linear-gradient(135deg, #00d4ff 0%, #0000FF 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  background: linear-gradient(145deg, #FFB347 0%, #FF8C00 40%, #FF6B35 70%, #E64A19 100%);
+  border: 3px solid #FFD700;
+  box-shadow: 
+    0 6px 16px rgba(255, 107, 53, 0.7),
+    0 2px 8px rgba(255, 215, 0, 0.5),
+    inset 0 4px 8px rgba(255, 255, 255, 0.5),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.4),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.6);
+  position: relative;
+  transform: translateZ(0);
 }
 
 .current-block-preview {
@@ -109,9 +116,16 @@
 }
 
 .preview-cell.filled {
-  background: linear-gradient(135deg, #00d4ff 0%, #0000FF 100%);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+  background: linear-gradient(145deg, #FFB347 0%, #FF8C00 40%, #FF6B35 70%, #E64A19 100%);
+  border: 3px solid #FFD700;
+  box-shadow: 
+    0 8px 20px rgba(255, 107, 53, 0.8),
+    0 4px 12px rgba(255, 215, 0, 0.6),
+    inset 0 4px 8px rgba(255, 255, 255, 0.5),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.4),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.6);
+  position: relative;
+  transform: translateZ(0);
 }
 
 .game-over-modal {

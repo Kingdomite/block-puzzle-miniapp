@@ -34,6 +34,25 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
   const generateNewBlock = () => {
     const randomShape = BLOCK_SHAPES[Math.floor(Math.random() * BLOCK_SHAPES.length)];
     setCurrentBlock(randomShape);
+    
+    // Check if the new block can be placed anywhere on the grid
+    setTimeout(() => {
+      checkGameOver(randomShape);
+    }, 100);
+  };
+
+  const checkGameOver = (block: BlockShape) => {
+    // Check every possible position on the grid
+    for (let row = 0; row < GRID_SIZE; row++) {
+      for (let col = 0; col < GRID_SIZE; col++) {
+        if (canPlaceBlock(row, col, block)) {
+          // Found at least one valid position, game continues
+          return;
+        }
+      }
+    }
+    // No valid position found - Game Over!
+    setGameOver(true);
   };
 
   const canPlaceBlock = (row: number, col: number, block: BlockShape): boolean => {
