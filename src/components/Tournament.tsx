@@ -159,7 +159,8 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
         return;
       }
 
-      const success = await web3Service.enterTournament();
+      const success = true; // Temporarily bypass tournament entry
+      // const success = await web3Service.enterTournament();
       if (success) {
         setIsEntered(true);
         playSuccessSound();
