@@ -1,0 +1,32 @@
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="#0f0f23"/>
+  
+  <!-- Gradient -->
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#7b2cbf;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#grad2)"/>
+  
+  <!-- Center content -->
+  <rect x="240" y="600" width="200" height="200" fill="#00d4ff" rx="20"/>
+  <rect x="480" y="600" width="200" height="200" fill="#7b2cbf" rx="20"/>
+  <rect x="720" y="600" width="120" height="200" fill="#ff006e" rx="20"/>
+  
+  <rect x="240" y="840" width="120" height="120" fill="#06ffa5" rx="20"/>
+  <rect x="400" y="840" width="120" height="120" fill="#ffbe0b" rx="20"/>
+  <rect x="560" y="840" width="280" height="120" fill="#fb5607" rx="20"/>
+  
+  <rect x="240" y="1000" width="280" height="120" fill="#8338ec" rx="20"/>
+  <rect x="560" y="1000" width="200" height="200" fill="#3a86ff" rx="20"/>
+  
+  <!-- Title -->
+  <text x="540" y="1350" font-family="Arial, sans-serif" font-size="96" font-weight="bold" fill="white" text-anchor="middle">BASE</text>
+  <text x="540" y="1450" font-family="Arial, sans-serif" font-size="96" font-weight="bold" fill="white" text-anchor="middle">PUZZLE</text>
+  
+  <!-- Loading text -->
+  <text x="540" y="1600" font-family="Arial, sans-serif" font-size="32" fill="#00d4ff" text-anchor="middle" opacity="0.8">Loading Game...</text>
+</svg>
