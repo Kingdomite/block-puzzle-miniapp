@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { sdk } from '@farcaster/miniapp-sdk';
+import sdk from '@farcaster/frame-sdk';
 import GameBoard from './components/GameBoard';
 import Tournament from './components/Tournament';
 import Achievements from './components/Achievements';
