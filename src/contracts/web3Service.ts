@@ -18,8 +18,20 @@ export class Web3Service {
   private signer: any = null;
 
   async connect(): Promise<string | null> {
+    // Check if mobile - use deep link for wallet apps
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
     if (!window.ethereum) {
+      // On mobile without injected wallet, open MetaMask deep link
+      if (isMobile) {
+        const dappUrl = window.location.href;
+        const metamaskUrl = `https://metamask.app.link/dapp/${dappUrl.replace(/^https?:\/\//, '')}`;
+        window.location.href = metamaskUrl;
+        return null;
+      }
+      
       console.error('No Ethereum provider found');
+      alert('Please install MetaMask or use a Web3 browser');
       return null;
     }
 
