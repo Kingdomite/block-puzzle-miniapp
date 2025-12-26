@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhEOEU3NjFGNzQ5MzA3MUQwMzhFQzc0NDc5RkYyNzMxNzI0Njk3NkEwIn0",
+    "payload": "eyJkb21haW4iOiJiYXNlcHV6emxlLnZlcmNlbC5hcHAifQ",
+    "signature": "MHhiNjU5YjY4ZTg2MjMzOTVjZTg0MzgxMzU1ZGJiODg5ODllODIzYjA5MThhOWUwMWE2NWM1Zjk4OGNlNWJiNzNhNTc1ZjQzMjQ4YWRjMWJhMzljNzIwYmQzMzVkNjg2ZTEzMjJiNzhjOGJkNjg3MzFiNjk3Y2YwMTAzMjczNGM0YjFi"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Base-Puzzle",
+    "iconUrl": "https://basepuzzle.vercel.app/puzzle-icon.svg",
+    "homeUrl": "https://basepuzzle.vercel.app",
+    "imageUrl": "https://basepuzzle.vercel.app/og-image.png",
+    "splashImageUrl": "https://basepuzzle.vercel.app/splash.png",
+    "splashBackgroundColor": "#0f0f23",
+    "webhookUrl": "https://base-puzzle-backend.onrender.com/webhooks/farcaster"
+  }
+}
