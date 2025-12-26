@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import './GameBoard.css';
+import { web3Service } from '../contracts/web3Service';
+import { apiService } from '../services/apiService';
 
 type BlockShape = number[][];
 type GridCell = boolean;
@@ -26,6 +28,9 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
   const [score, setScore] = useState(0);
   const [currentBlock, setCurrentBlock] = useState<BlockShape | null>(null);
   const [gameOver, setGameOver] = useState(false);
+  const [gameStartTime, setGameStartTime] = useState<number>(Date.now());
+  const [totalLinesCleared, setTotalLinesCleared] = useState(0);
+  const [personalBest, setPersonalBest] = useState(0);
 
   // Sound effects using Web Audio API
   const playSound = (type: 'place' | 'clear' | 'gameOver') => {
@@ -88,10 +93,41 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
       // No valid position found - Game Over!
       playSound('gameOver');
       setGameOver(true);
+      
+      // Save score to backend
+      saveGameScore();
     };
     
     checkGameOver();
   }, [currentBlock, grid, gameOver]);
+
+  // Save game score to backend
+  const saveGameScore = async () => {
+    try {
+      const address = await web3Service.getAddress();
+      if (!address) return;
+
+      const duration = Math.floor((Date.now() - gameStartTime) / 1000); // seconds
+      
+      await apiService.submitScore(
+        address,
+        score,
+        totalLinesCleared,
+        duration,
+        tournamentMode,
+        tournamentMode ? 1 : undefined // TODO: Get actual tournament ID
+      );
+      
+      // Update personal best
+      if (score > personalBest) {
+        setPersonalBest(score);
+      }
+      
+      console.log('✅ Score saved to backend');
+    } catch (error) {
+      console.error('Failed to save score:', error);
+    }
+  };
 
   const canPlaceBlock = (row: number, col: number, block: BlockShape): boolean => {
     for (let r = 0; r < block.length; r++) {
@@ -129,6 +165,7 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
     const clearedLines = clearCompleteLines(newGrid);
     setGrid(newGrid);
     setScore(prev => prev + 10 + (clearedLines * 50));
+    setTotalLinesCleared(prev => prev + clearedLines);
     
     // Play sounds
     playSound('place');
@@ -165,6 +202,8 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
     setGrid(Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false)));
     setScore(0);
     setGameOver(false);
+    setGameStartTime(Date.now());
+    setTotalLinesCleared(0);
     generateNewBlock();
   };
 
@@ -225,11 +264,83 @@ const GameBoard = ({ tournamentMode = false }: GameBoardProps) => {
 
       {gameOver && (
         <div className="game-over-modal">
-          <h2>Game Over!</h2>
-          <p>Final Score: {score}</p>
-          <button onClick={resetGame} className="reset-btn">
-            Play Again
-          </button>
+          <h2>🎮 Game Over!</h2>
+          
+          <div style={{ 
+            background: 'rgba(0, 0, 0, 0.3)', 
+            padding: '1.5rem', 
+            borderRadius: '12px',
+            marginBottom: '1.5rem'
+          }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr', 
+              gap: '1rem',
+              marginBottom: '1rem'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', opacity: 0.7 }}>Final Score</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#00d4ff' }}>
+                  {score.toLocaleString()}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '0.85rem', opacity: 0.7 }}>Personal Best</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#FFD700' }}>
+                  {Math.max(score, personalBest).toLocaleString()}
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr', 
+              gap: '1rem',
+              fontSize: '0.9rem'
+            }}>
+              <div>
+                <span style={{ opacity: 0.7 }}>Lines Cleared:</span>
+                <strong style={{ marginLeft: '0.5rem' }}>{totalLinesCleared}</strong>
+              </div>
+              <div>
+                <span style={{ opacity: 0.7 }}>Time:</span>
+                <strong style={{ marginLeft: '0.5rem' }}>
+                  {Math.floor((Date.now() - gameStartTime) / 1000)}s
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          {score > personalBest && (
+            <div style={{ 
+              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              color: '#000',
+              fontWeight: '600'
+            }}>
+              🎉 New Personal Best!
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button onClick={resetGame} className="reset-btn">
+              🔄 Play Again
+            </button>
+            {!tournamentMode && (
+              <button 
+                onClick={() => {
+                  resetGame();
+                  window.location.hash = '#tournament';
+                }} 
+                className="reset-btn"
+                style={{ background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)' }}
+              >
+                🏆 Enter Tournament
+              </button>
+            )}
+          </div>
         </div>
       )}
 

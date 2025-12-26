@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './Achievements.css';
 import { web3Service } from '../contracts/web3Service';
+import { apiService } from '../services/apiService';
 
 interface Achievement {
   id: number;
@@ -96,8 +97,15 @@ const Achievements = () => {
         return;
       }
 
-      const dummySignature = '0x' + '00'.repeat(65);
-      const success = await web3Service.mintAchievement(id, dummySignature);
+      // Get real signature from backend
+      const result = await apiService.getAchievementSignature(address, id);
+      
+      if (!result || !result.signature) {
+        alert('Achievement not earned yet. Keep playing!');
+        return;
+      }
+
+      const success = await web3Service.mintAchievement(id, result.signature);
       
       if (success) {
         setAchievements(prev => prev.map(a => 
@@ -106,7 +114,7 @@ const Achievements = () => {
         playSuccessSound();
         alert(`Achievement "${achievements.find(a => a.id === id)?.name}" minted successfully!`);
       } else {
-        alert('Minting failed. Make sure you earned this achievement.');
+        alert('Minting failed. Please try again.');
       }
     } catch (error) {
       console.error('Mint error:', error);

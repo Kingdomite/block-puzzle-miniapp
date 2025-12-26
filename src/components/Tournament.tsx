@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import './Tournament.css';
 import { web3Service } from '../contracts/web3Service';
+import { apiService } from '../services/apiService';
 
 interface TournamentData {
   prizePool: number;
   participants: number;
   timeRemaining: string;
   entryFee: number;
+}
+
+interface LeaderboardEntry {
+  player_address: string;
+  best_score: number;
+  games_played: number;
 }
 
 interface TournamentProps {
@@ -18,6 +25,8 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [userAddress, setUserAddress] = useState<string | null>(null);
   const [tournamentData, setTournamentData] = useState<TournamentData>({
     prizePool: 42.5,
     participants: 127,
@@ -48,6 +57,7 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
       try {
         const address = await web3Service.getAddress();
         if (address) {
+          setUserAddress(address);
           const entered = await web3Service.hasEnteredTournament(address);
           setIsEntered(entered);
         }
@@ -60,6 +70,26 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
 
     checkIfEntered();
   }, []);
+
+  // Load leaderboard
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      try {
+        const data = await apiService.getTournamentLeaderboard(1); // Tournament ID 1
+        if (data && data.leaderboard) {
+          setLeaderboard(data.leaderboard);
+        }
+      } catch (e) {
+        console.error('Failed to load leaderboard:', e);
+      }
+    };
+
+    if (!isChecking) {
+      loadLeaderboard();
+      const interval = setInterval(loadLeaderboard, 15000); // Refresh every 15s
+      return () => clearInterval(interval);
+    }
+  }, [isChecking]);
 
   useEffect(() => {
     const loadTournamentData = async () => {
@@ -242,31 +272,34 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
       <div className="leaderboard">
         <h3>🎯 Today's Top Scores</h3>
         <div className="leaderboard-list">
-          <div className="leaderboard-item rank-1">
-            <span className="rank">1</span>
-            <span className="player">0x7a3...9f2</span>
-            <span className="score">12,450</span>
-          </div>
-          <div className="leaderboard-item rank-2">
-            <span className="rank">2</span>
-            <span className="player">0x4b1...6e8</span>
-            <span className="score">11,890</span>
-          </div>
-          <div className="leaderboard-item rank-3">
-            <span className="rank">3</span>
-            <span className="player">0x9c5...2a7</span>
-            <span className="score">10,320</span>
-          </div>
-          <div className="leaderboard-item">
-            <span className="rank">4</span>
-            <span className="player">0x2f8...4d1</span>
-            <span className="score">9,750</span>
-          </div>
-          <div className="leaderboard-item">
-            <span className="rank">5</span>
-            <span className="player">0x6e3...8b9</span>
-            <span className="score">8,990</span>
-          </div>
+          {leaderboard.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'rgba(255,255,255,0.6)' }}>
+              No scores yet. Be the first to play!
+            </div>
+          ) : (
+            leaderboard.map((entry, index) => {
+              const isCurrentUser = userAddress && entry.player_address.toLowerCase() === userAddress.toLowerCase();
+              const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+              
+              return (
+                <div 
+                  key={entry.player_address} 
+                  className={`leaderboard-item ${rankClass} ${isCurrentUser ? 'current-user' : ''}`}
+                  style={isCurrentUser ? { background: 'rgba(0, 212, 255, 0.2)', border: '2px solid #00d4ff' } : {}}
+                >
+                  <span className="rank">{index + 1}</span>
+                  <span className="player">
+                    {entry.player_address.slice(0, 6)}...{entry.player_address.slice(-4)}
+                    {isCurrentUser && ' (You)'}
+                  </span>
+                  <span className="score">{entry.best_score.toLocaleString()}</span>
+                  <span className="games" style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+                    {entry.games_played} {entry.games_played === 1 ? 'game' : 'games'}
+                  </span>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
         </>
