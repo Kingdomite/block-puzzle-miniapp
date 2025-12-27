@@ -28,10 +28,10 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const [tournamentData, setTournamentData] = useState<TournamentData>({
-    prizePool: 42.5,
-    participants: 127,
-    timeRemaining: '18:32:45',
-    entryFee: 0.35
+    prizePool: 0,
+    participants: 0,
+    timeRemaining: '00:00:00',
+    entryFee: 0.001
   });
 
   const playSuccessSound = () => {
@@ -96,10 +96,21 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
       try {
         const data = await web3Service.getCurrentTournament();
         if (data) {
+          const prizePoolETH = Number(data.totalPrizePool) / 1e18;
+          const prizePoolUSD = prizePoolETH * 3000; // Approximate ETH price
+          const now = Math.floor(Date.now() / 1000);
+          const endTime = Number(data.endTime);
+          const timeLeft = Math.max(0, endTime - now);
+          
+          const hours = Math.floor(timeLeft / 3600);
+          const minutes = Math.floor((timeLeft % 3600) / 60);
+          const seconds = timeLeft % 60;
+          
           setTournamentData(prev => ({
             ...prev,
-            prizePool: Number(data.totalPrizePool) / 1e18 * 3000,
-            participants: Number(data.participantCount)
+            prizePool: prizePoolUSD,
+            participants: Number(data.participantCount),
+            timeRemaining: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
           }));
         }
       } catch (e) {
