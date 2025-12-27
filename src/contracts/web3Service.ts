@@ -1,4 +1,4 @@
-import { BrowserProvider, Contract, parseEther } from 'ethers';
+import { BrowserProvider, Contract } from 'ethers';
 import { 
   ACHIEVEMENT_BADGES_ABI, 
   TOURNAMENT_MANAGER_ABI,

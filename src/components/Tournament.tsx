@@ -95,6 +95,7 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
     const loadTournamentData = async () => {
       try {
         const data = await web3Service.getCurrentTournament();
+        console.log('🎯 Tournament data from contract:', data);
         if (data) {
           const prizePoolETH = Number(data.totalPrizePool) / 1e18;
           const prizePoolUSD = prizePoolETH * 3000; // Approximate ETH price
@@ -105,6 +106,16 @@ const Tournament = ({ onStartGame }: TournamentProps) => {
           const hours = Math.floor(timeLeft / 3600);
           const minutes = Math.floor((timeLeft % 3600) / 60);
           const seconds = timeLeft % 60;
+          
+          console.log('📊 Calculated values:', {
+            prizePoolETH,
+            prizePoolUSD,
+            participants: Number(data.participantCount),
+            timeLeft,
+            hours,
+            minutes,
+            seconds
+          });
           
           setTournamentData(prev => ({
             ...prev,
