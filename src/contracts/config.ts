@@ -9,12 +9,12 @@ export const ACHIEVEMENT_BADGES_ABI = [
 
 export const TOURNAMENT_MANAGER_ABI = [
   "function enterTournament() external payable",
-  "function getEntryFeeETH() external view returns (uint256)",
   "function currentTournamentId() external view returns (uint256)",
-  "function hasEnteredCurrent(address player) external view returns (bool)",
-  "function getCurrentTournament() external view returns (tuple(uint256 id, uint256 startTime, uint256 endTime, uint256 totalPrizePool, uint256 participantCount, bool finalized, address[] winners, uint256[] prizes))",
-  "event PlayerEntered(uint256 indexed tournamentId, address indexed player, uint256 entryFee)",
-  "event TournamentFinalized(uint256 indexed tournamentId, address[] winners, uint256[] prizes)"
+  "function hasEntered(uint256 tournamentId, address player) external view returns (bool)",
+  "function getCurrentTournament() external view returns (tuple(uint256 startTime, uint256 endTime, uint256 totalPrizePool, uint256 participantCount, bool finalized))",
+  "function entryFee() external view returns (uint256)",
+  "event TournamentEntered(uint256 indexed tournamentId, address indexed player)",
+  "event TournamentFinalized(uint256 indexed tournamentId, uint256 prizePool)"
 ];
 
 export const GAME_CONTROLLER_ABI = [

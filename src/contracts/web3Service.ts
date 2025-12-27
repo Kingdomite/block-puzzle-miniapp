@@ -114,17 +114,9 @@ export class Web3Service {
         this.signer
       );
 
-      let entryFee;
-      try {
-        entryFee = await contract.getEntryFeeETH();
-      } catch (e) {
-        console.warn('Failed to fetch entry fee from contract, falling back to default.', e);
-      }
-
-      const value = entryFee ?? parseEther('0.00035');
-
+      const entryFee = await contract.entryFee();
       const tx = await contract.enterTournament({
-        value
+        value: entryFee
       });
       
       await tx.wait();
@@ -162,7 +154,8 @@ export class Web3Service {
         this.provider
       );
 
-      return await contract.hasEnteredCurrent(address);
+      const tournamentId = await contract.currentTournamentId();
+      return await contract.hasEntered(tournamentId, address);
     } catch (error) {
       console.error('Failed to check tournament entry:', error);
       return false;
