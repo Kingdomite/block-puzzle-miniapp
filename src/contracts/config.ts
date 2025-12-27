@@ -24,10 +24,10 @@ export const GAME_CONTROLLER_ABI = [
   "event ScoreVerified(address indexed player, uint256 score, uint256 tournamentId)"
 ];
 
-// Contract addresses on Base (update after deployment)
+// Contract addresses on Base Mainnet
 export const CONTRACT_ADDRESSES = {
-  ACHIEVEMENT_BADGES: '0x8b4b5261af2807036c8913a14e4b19e09643d93e',
-  TOURNAMENT_MANAGER: '0xd61b37D07b52Ab9bCd32eDa54d2621836c996EB7',
+  ACHIEVEMENT_BADGES: '0x7c7194Ceb89a3BCBA4F1d6F399FA4903E916A64e',
+  TOURNAMENT_MANAGER: '0x9edcd50A20c8D3bAe362deA46069a4502e310bD4',
   GAME_CONTROLLER: '0x0000000000000000000000000000000000000000',
 };
 

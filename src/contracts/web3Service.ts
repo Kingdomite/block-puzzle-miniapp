@@ -4,7 +4,7 @@ import {
   TOURNAMENT_MANAGER_ABI,
   GAME_CONTROLLER_ABI,
   CONTRACT_ADDRESSES,
-  BASE_SEPOLIA
+  BASE_NETWORK
 } from './config';
 
 declare global {
@@ -103,8 +103,8 @@ export class Web3Service {
 
     try {
       const network = await this.provider.getNetwork();
-      if (Number(network.chainId) !== BASE_SEPOLIA.chainId) {
-        console.error('Wrong network. Please switch your wallet to Base Sepolia.');
+      if (Number(network.chainId) !== BASE_NETWORK.chainId) {
+        console.error('Wrong network. Please switch your wallet to Base Mainnet.');
         return false;
       }
 
